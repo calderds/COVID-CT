@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+
 # In[147]:
 
 
@@ -70,8 +71,8 @@ torch.cuda.empty_cache()
 # In[2]:
 
 
-get_ipython().system('pip install --upgrade efficientnet-pytorch')
-
+#get_ipython().system('pip install --upgrade efficientnet-pytorch')
+os.system('pip install --upgrade efficientnet_pytorch')
 
 # In[3]:
 
@@ -123,7 +124,7 @@ class CovidCTDataset(Dataset):
                 - ......
         """
         self.root_dir = root_dir
-        self.txt_path = [txt_COVID,txt_NonCOVID]
+        self.txt_path = [txt_COVID, txt_NonCOVID]
         self.classes = ['CT_COVID', 'CT_NonCOVID']
         self.num_cls = len(self.classes)
         self.img_list = []
@@ -152,17 +153,17 @@ class CovidCTDataset(Dataset):
 
     
 if __name__ == '__main__':
-    trainset = CovidCTDataset(root_dir='new_data/4.4_image',
-                              txt_COVID='new_data/newtxt/train.txt',
-                              txt_NonCOVID='old_data/oldtxt/trainCT_NonCOVID.txt',
+    trainset = CovidCTDataset(root_dir='../../Images-processed/',
+                              txt_COVID='../../Data-split/COVID/trainCT_COVID.txt',
+                              txt_NonCOVID='../../Data-split/NonCOVID/trainCT_NonCOVID.txt',
                               transform= train_transformer)
-    valset = CovidCTDataset(root_dir='new_data/4.4_image',
-                              txt_COVID='new_data/newtxt/val.txt',
-                              txt_NonCOVID='old_data/oldtxt/valCT_NonCOVID.txt',
+    valset = CovidCTDataset(root_dir='../../Images-Processed/',
+                              txt_COVID='../../Data-split/COVID/valCT_COVID.txt',
+                              txt_NonCOVID='../../Data-split/NonCOVID/valCT_NonCOVID.txt',
                               transform= val_transformer)
-    testset = CovidCTDataset(root_dir='new_data/4.4_image',
-                              txt_COVID='new_data/newtxt/test.txt',
-                              txt_NonCOVID='old_data/oldtxt/testCT_NonCOVID.txt',
+    testset = CovidCTDataset(root_dir='../../Images-processed/',
+                              txt_COVID='../../Data-split/COVID/testCT_COVID.txt',
+                              txt_NonCOVID='../../Data-split/NonCOVID/testCT_NonCOVID.txt',
                               transform= val_transformer)
     print(trainset.__len__())
     print(valset.__len__())
