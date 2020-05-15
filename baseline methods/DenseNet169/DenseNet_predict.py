@@ -66,13 +66,21 @@ import skimage
 
 torch.cuda.empty_cache()
 
+def try_dir(path):
+    #make directory if it doesn't exist
+    if not os.path.exists(path):
+	    os.makedirs(path)
 
+def try_file(path):
+    #create a blank text file if it doesn't exist
+    if not os.path.exists(path):
+        os.mknod(path)
 
 # In[2]:
 
 
 #get_ipython().system('pip install --upgrade efficientnet-pytorch')
-os.system('pip install --upgrade efficientnet_pytorch')
+os.system('python -m pip installl --upgrade efficientnet-pytorch')
 
 # In[3]:
 
@@ -157,7 +165,7 @@ if __name__ == '__main__':
                               txt_COVID='../../Data-split/COVID/trainCT_COVID.txt',
                               txt_NonCOVID='../../Data-split/NonCOVID/trainCT_NonCOVID.txt',
                               transform= train_transformer)
-    valset = CovidCTDataset(root_dir='../../Images-Processed/',
+    valset = CovidCTDataset(root_dir='../../Images-processed/',
                               txt_COVID='../../Data-split/COVID/valCT_COVID.txt',
                               txt_NonCOVID='../../Data-split/NonCOVID/valCT_NonCOVID.txt',
                               transform= val_transformer)
@@ -228,6 +236,9 @@ def train(optimizer, epoch):
     print('\nTrain set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         train_loss/len(train_loader.dataset), train_correct, len(train_loader.dataset),
         100.0 * train_correct / len(train_loader.dataset)))
+
+    try_dir('model_result')
+    try_file('model_result/{}.txt'.format(modelname)) 
     f = open('model_result/{}.txt'.format(modelname), 'a+')
     f.write('\nTrain set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         train_loss/len(train_loader.dataset), train_correct, len(train_loader.dataset),
@@ -469,7 +480,7 @@ modelname = 'SimpleCNN'
 
 ### ResNet18
 import torchvision.models as models
-model = models.resnet18(pretrained=True).cuda()
+model = models.resnet18(pretrained=False).cuda()
 modelname = 'ResNet18'
 
 
@@ -478,7 +489,7 @@ modelname = 'ResNet18'
 
 ### Dense121
 import torchvision.models as models
-model = models.densenet121(pretrained=True).cuda()
+model = models.densenet121(pretrained=False).cuda()
 modelname = 'Dense121'
 
 
@@ -487,7 +498,7 @@ modelname = 'Dense121'
 
 ### Dense169
 import torchvision.models as models
-model = models.densenet169(pretrained=True).cuda()
+model = models.densenet169(pretrained=False).cuda()
 modelname = 'Dense169'
 
 
@@ -496,7 +507,7 @@ modelname = 'Dense169'
 
 ### ResNet50
 import torchvision.models as models
-model = models.resnet50(pretrained=True).cuda()
+model = models.resnet50(pretrained=False).cuda()
 modelname = 'ResNet50'
 
 
@@ -505,7 +516,7 @@ modelname = 'ResNet50'
 
 ### VGGNet
 import torchvision.models as models
-model = models.vgg16(pretrained=True)
+model = models.vgg16(pretrained=False)
 model = model.cuda()
 modelname = 'vgg16'
 
@@ -599,13 +610,16 @@ for epoch in range(1, total_epoch+1):
         
         
 #         if epoch == total_epoch:
+
+        try_dir('model_backup')
         torch.save(model.state_dict(), "model_backup/{}.pt".format(modelname))  
         
         vote_pred = np.zeros(valset.__len__())
         vote_score = np.zeros(valset.__len__())
         print('\n The epoch is {}, average recall: {:.4f}, average precision: {:.4f},average F1: {:.4f}, average accuracy: {:.4f}, average AUC: {:.4f}'.format(
         epoch, r, p, F1, acc, AUC))
-
+        
+        try_file('model_result/{}.txt'.format(modelname))
         f = open('model_result/{}.txt'.format(modelname), 'a+')
         f.write('\n The epoch is {}, average recall: {:.4f}, average precision: {:.4f},average F1: {:.4f}, average accuracy: {:.4f}, average AUC: {:.4f}'.format(
         epoch, r, p, F1, acc, AUC))
@@ -712,6 +726,7 @@ for epoch in range(1, total_epoch+1):
         print('\n The epoch is {}, average recall: {:.4f}, average precision: {:.4f},average F1: {:.4f}, average accuracy: {:.4f}, average AUC: {:.4f}'.format(
         epoch, r, p, F1, acc, AUC))
 
+        try_file(f'model_result/test_{modelname},txt')
         f = open(f'model_result/test_{modelname}.txt', 'a+')
         f.write('\n The epoch is {}, average recall: {:.4f}, average precision: {:.4f},average F1: {:.4f}, average accuracy: {:.4f}, average AUC: {:.4f}'.format(
         epoch, r, p, F1, acc, AUC))
